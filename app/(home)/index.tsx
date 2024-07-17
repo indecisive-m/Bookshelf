@@ -1,4 +1,5 @@
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { useClerk, useUser } from "@clerk/clerk-expo";
 import {
   Authenticated,
@@ -10,6 +11,7 @@ import {
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import { Button, Text, TextInput, View } from "react-native";
+import { tapGestureHandlerProps } from "react-native-gesture-handler/lib/typescript/handlers/TapGestureHandler";
 
 export default function HomePage() {
   const [text, setText] = useState("");
@@ -17,6 +19,7 @@ export default function HomePage() {
 
   const createTask = useMutation(api.tasks.submitTask);
   const getTasks = useQuery(api.tasks.get);
+  const deleteTask = useMutation(api.tasks.removeTask);
 
   const router = useRouter();
 
@@ -43,7 +46,7 @@ export default function HomePage() {
       <Authenticated>
         <Text>{user?.emailAddresses[0].emailAddress}</Text>
         <Button title="Sign Out" onPress={signOut} />
-        <Button title="Delete" onPress={deleteAccount} />
+        <Button title="Delete Account" onPress={deleteAccount} />
         <TextInput
           placeholder="Text"
           value={text}
@@ -58,7 +61,13 @@ export default function HomePage() {
         <Button title="Submit" onPress={() => onSubmit()} />
 
         {getTasks?.map((task) => {
-          return <Text>{task.task}</Text>;
+          const taskId: Id<"tasks"> = task._id;
+          return (
+            <View>
+              <Text>{task.task}</Text>
+              <Text onPress={() => deleteTask({ taskId })}>X</Text>
+            </View>
+          );
         })}
       </Authenticated>
       <Unauthenticated>
