@@ -1,7 +1,8 @@
-import { useSignIn } from "@clerk/clerk-expo";
+import { useAuth, useSignIn, useUser } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
 import { Text, TextInput, Button, View } from "react-native";
 import React from "react";
+import { Authenticated, Unauthenticated, useConvexAuth } from "convex/react";
 
 export default function Page() {
   const { signIn, setActive, isLoaded } = useSignIn();
