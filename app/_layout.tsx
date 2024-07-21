@@ -14,6 +14,7 @@ import { Slot, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 
 import { useEffect } from "react";
+import Toast from "react-native-toast-message";
 
 const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
   unsavedChangesWarning: false,
@@ -76,6 +77,7 @@ export default function RootLayout() {
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
           <Slot />
+          <Toast position="bottom" />
         </ThemeProvider>
       </ConvexProviderWithClerk>
     </ClerkProvider>

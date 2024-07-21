@@ -1,5 +1,6 @@
+import { ThemedView } from "@/components/ThemedView";
+import Welcome from "@/components/Welcome";
 import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
 import { BookObject } from "@/utils/types";
 import {
   SignedIn,
@@ -8,14 +9,7 @@ import {
   useClerk,
   useUser,
 } from "@clerk/clerk-expo";
-import {
-  Authenticated,
-  Unauthenticated,
-  useAction,
-  useConvexAuth,
-  useMutation,
-  useQuery,
-} from "convex/react";
+import { useAction } from "convex/react";
 import { Link, Redirect, useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -48,10 +42,6 @@ export default function HomePage() {
     );
   }
 
-  // if (!isSignedIn) {
-  //   return <Redirect href={"/sign-in"} />;
-  // }
-
   const signOut = () => {
     clerk.signOut();
     router.replace("/");
@@ -66,9 +56,7 @@ export default function HomePage() {
   };
 
   return (
-    <View
-      style={{ justifyContent: "center", alignItems: "center", padding: 20 }}
-    >
+    <ThemedView style={{ flex: 1 }}>
       <SignedIn>
         <Text>{user?.emailAddresses[0].emailAddress}</Text>
         <Button title="Sign Out" onPress={signOut} />
@@ -87,10 +75,12 @@ export default function HomePage() {
         <Button title="get books" onPress={onClick} />
       </SignedIn>
       <SignedOut>
-        <Link href={"/sign-in"}>
-          <Text>Sign in</Text>
-        </Link>
+        <ThemedView
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Welcome />
+        </ThemedView>
       </SignedOut>
-    </View>
+    </ThemedView>
   );
 }

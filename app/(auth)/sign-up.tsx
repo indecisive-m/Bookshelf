@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TextInput, Button, View } from "react-native";
+import { TextInput, Button, View, StyleSheet } from "react-native";
 import { useSignUp } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 
@@ -88,3 +88,34 @@ export default function SignUpScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    width: "100%",
+    justifyContent: "center",
+    padding: 10,
+    gap: 10,
+  },
+  button: {
+    borderRadius: 10,
+    paddingVertical: 20,
+    paddingHorizontal: 50,
+    width: "100%",
+    alignItems: "center",
+  },
+  input: {
+    padding: 10,
+    borderWidth: 1,
+    fontSize: 16,
+  },
+  link: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  secondaryButton: {
+    borderWidth: 2,
+    paddingHorizontal: 20,
+    paddingVertical: 5,
+    borderRadius: 10,
+  },
+});

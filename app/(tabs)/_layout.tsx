@@ -6,13 +6,12 @@ export default function TabsLayout() {
   const { isSignedIn } = useAuth();
 
   if (!isSignedIn) {
-    return <Stack />;
+    return <Stack screenOptions={{ headerShown: false }} />;
   }
 
   return (
     <Tabs>
       <Tabs.Screen name="index" options={{ title: "Home" }} />
-
       <Tabs.Screen name="account" options={{ title: "Account" }} />
     </Tabs>
   );
