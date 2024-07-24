@@ -1,16 +1,27 @@
-import * as React from "react";
-import { TextInput, Button, View, StyleSheet } from "react-native";
+import {
+  TextInput,
+  Button,
+  View,
+  StyleSheet,
+  Pressable,
+  useColorScheme,
+} from "react-native";
 import { useSignUp } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
+import { useState } from "react";
+import { ThemedView } from "@/components/ThemedView";
+import { ThemedText } from "@/components/ThemedText";
+import { Colors } from "@/constants/Colors";
 
 export default function SignUpScreen() {
   const { isLoaded, signUp, setActive } = useSignUp();
   const router = useRouter();
+  const theme = useColorScheme() ?? "dark";
 
-  const [emailAddress, setEmailAddress] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [pendingVerification, setPendingVerification] = React.useState(false);
-  const [code, setCode] = React.useState("");
+  const [emailAddress, setEmailAddress] = useState("");
+  const [password, setPassword] = useState("");
+  const [pendingVerification, setPendingVerification] = useState(false);
+  const [code, setCode] = useState("");
 
   const onSignUpPress = async () => {
     if (!isLoaded) {
@@ -50,30 +61,88 @@ export default function SignUpScreen() {
         console.error(JSON.stringify(completeSignUp, null, 2));
       }
     } catch (err: any) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
+      const error = err;
+
       console.error(JSON.stringify(err, null, 2));
     }
   };
 
   return (
-    <View style={{ justifyContent: "center", alignItems: "center", flex: 1 }}>
+    <ThemedView
+      style={{
+        justifyContent: "center",
+        alignItems: "center",
+        flex: 1,
+        padding: 20,
+        gap: 10,
+      }}
+    >
       {!pendingVerification && (
-        <>
-          <TextInput
-            autoCapitalize="none"
-            value={emailAddress}
-            placeholder="Email..."
-            onChangeText={(email) => setEmailAddress(email)}
-          />
-          <TextInput
-            value={password}
-            placeholder="Password..."
-            secureTextEntry={true}
-            onChangeText={(password) => setPassword(password)}
-          />
-          <Button title="Sign Up" onPress={onSignUpPress} />
-        </>
+        <ThemedView style={styles.container}>
+          <ThemedView style={styles.container}>
+            <ThemedText type="title">Email:</ThemedText>
+            <TextInput
+              autoCapitalize="none"
+              value={emailAddress}
+              placeholder="Email..."
+              onChangeText={(email) => setEmailAddress(email)}
+              style={[
+                styles.input,
+                { borderColor: Colors[theme].tint, color: Colors[theme].text },
+              ]}
+            />
+          </ThemedView>
+          <ThemedView style={styles.container}>
+            <ThemedText type="title">Password:</ThemedText>
+
+            <TextInput
+              value={password}
+              placeholder="Password..."
+              secureTextEntry={true}
+              onChangeText={(password) => setPassword(password)}
+              style={[
+                styles.input,
+                { borderColor: Colors[theme].tint, color: Colors[theme].text },
+              ]}
+            />
+          </ThemedView>
+          <ThemedView style={styles.container}>
+            <Pressable
+              onPress={onSignUpPress}
+              style={[
+                styles.button,
+                { backgroundColor: Colors[theme].buttonAction },
+              ]}
+            >
+              <ThemedText
+                type="subtitle"
+                style={{ color: Colors[theme].buttonActionText }}
+              >
+                Create Account
+              </ThemedText>
+            </Pressable>
+          </ThemedView>
+          <Pressable
+            style={[styles.link, styles.container]}
+            onPress={() => router.push("/sign-in")}
+          >
+            <ThemedText
+              type="defaultSemiBold"
+              style={{ color: Colors[theme].text, marginBottom: 5 }}
+            >
+              Already have an account
+            </ThemedText>
+            <ThemedText
+              style={[
+                styles.secondaryButton,
+                { borderColor: Colors[theme].buttonAction },
+              ]}
+              type="defaultSemiBold"
+            >
+              Log In
+            </ThemedText>
+          </Pressable>
+        </ThemedView>
       )}
       {pendingVerification && (
         <>
@@ -85,7 +154,7 @@ export default function SignUpScreen() {
           <Button title="Verify Email" onPress={onPressVerify} />
         </>
       )}
-    </View>
+    </ThemedView>
   );
 }
 

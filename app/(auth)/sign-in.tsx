@@ -53,6 +53,10 @@ export default function Page() {
         Toast.show({
           type: "error",
           text1: "Password Incorrect",
+          props: {
+            backgroundColor: Colors[theme].text,
+            textColor: Colors[theme].background,
+          },
         });
         setPassword("");
       }
@@ -61,6 +65,10 @@ export default function Page() {
         Toast.show({
           type: "error",
           text1: "Email not recognised",
+          props: {
+            backgroundColor: Colors[theme].text,
+            textColor: Colors[theme].background,
+          },
         });
       }
 
@@ -68,6 +76,10 @@ export default function Page() {
         Toast.show({
           type: "error",
           text1: "Please enter a password",
+          props: {
+            backgroundColor: Colors[theme].text,
+            textColor: Colors[theme].background,
+          },
         });
       }
 
@@ -75,6 +87,10 @@ export default function Page() {
         Toast.show({
           type: "error",
           text1: "Please enter a valid email",
+          props: {
+            backgroundColor: Colors[theme].text,
+            textColor: Colors[theme].background,
+          },
         });
       }
     }
@@ -126,16 +142,25 @@ export default function Page() {
             { backgroundColor: Colors[theme].buttonAction },
           ]}
         >
-          <ThemedText type="subtitle">Sign In</ThemedText>
+          <ThemedText
+            type="subtitle"
+            style={{ color: Colors[theme].buttonActionText }}
+          >
+            Log In
+          </ThemedText>
         </Pressable>
       </ThemedView>
 
-      {/* <ThemedView style={styles.container}> */}
       <Pressable
         style={[styles.link, styles.container]}
         onPress={() => router.push("/sign-up")}
       >
-        <ThemedText type="defaultSemiBold">Don't have an account?</ThemedText>
+        <ThemedText
+          type="defaultSemiBold"
+          style={{ color: Colors[theme].text, marginBottom: 5 }}
+        >
+          Don't have an account?
+        </ThemedText>
         <ThemedText
           style={[
             styles.secondaryButton,
@@ -143,11 +168,10 @@ export default function Page() {
           ]}
           type="defaultSemiBold"
         >
-          Sign up
+          Create Account
         </ThemedText>
       </Pressable>
     </ThemedView>
-    // </ThemedView>
   );
 }
 

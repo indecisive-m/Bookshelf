@@ -22,7 +22,7 @@ export default function AuthRoutesLayout() {
             name="arrow-back"
             size={25}
             onPress={() => router.back()}
-            style={{ color: Colors[theme].tint }}
+            style={{ color: Colors[theme].text }}
           />
         ),
       }}
