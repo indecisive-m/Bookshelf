@@ -6,12 +6,13 @@ import {
   Pressable,
   useColorScheme,
 } from "react-native";
-import { useSignUp } from "@clerk/clerk-expo";
+import { useClerk, useSignUp } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
+import Toast from "react-native-toast-message";
 
 export default function SignUpScreen() {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -22,6 +23,8 @@ export default function SignUpScreen() {
   const [password, setPassword] = useState("");
   const [pendingVerification, setPendingVerification] = useState(false);
   const [code, setCode] = useState("");
+
+  const clerk = useClerk();
 
   const onSignUpPress = async () => {
     if (!isLoaded) {
@@ -40,7 +43,55 @@ export default function SignUpScreen() {
     } catch (err: any) {
       // See https://clerk.com/docs/custom-flows/error-handling
       // for more info on error handling
-      console.error(JSON.stringify(err, null, 2));
+      // console.error(JSON.stringify(err, null, 2));
+
+      const error = err.errors;
+
+      error.map((error) => {
+        if (error.code === "form_param_format_invalid") {
+          Toast.show({
+            type: "error",
+            text1: "Email address invalid",
+          });
+        }
+        if (error.code === "form_password_length_too_short") {
+          Toast.show({
+            type: "error",
+            text1: "Password too short",
+          });
+        }
+        if (error.code === "form_password_pwned") {
+          Toast.show({
+            type: "error",
+            text1:
+              "Password has been found in an online data breach. Please use a different password",
+          });
+        }
+        if (error.code === "form_identifier_exists") {
+          Toast.show({
+            type: "error",
+            text1: "That email address is in use. Would you like to log in?",
+          });
+        }
+        if (error.code === "form_param_nil" && !emailAddress && !password) {
+          Toast.show({
+            type: "error",
+            text1: "Please enter an email address and password",
+          });
+        }
+        if (error.code === "form_param_nil" && !emailAddress) {
+          Toast.show({
+            type: "error",
+            text1: "Please enter an email address",
+          });
+        }
+        if (error.code === "form_param_nil" && !password) {
+          Toast.show({
+            type: "error",
+            text1: "Please enter a password",
+          });
+        }
+      });
     }
   };
 

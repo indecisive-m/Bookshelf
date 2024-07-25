@@ -52,11 +52,7 @@ export default function Page() {
       if (error === "form_password_incorrect") {
         Toast.show({
           type: "error",
-          text1: "Password Incorrect",
-          props: {
-            backgroundColor: Colors[theme].text,
-            textColor: Colors[theme].background,
-          },
+          text1: "Password incorrect",
         });
         setPassword("");
       }

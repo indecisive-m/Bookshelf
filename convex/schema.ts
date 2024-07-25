@@ -13,4 +13,10 @@ export default defineSchema({
     email: v.string(),
     bookshelf: v.optional(v.string()),
   }).index("by_email", ["email"]),
+
+  users: defineTable({
+    name: v.string(),
+    // this the Clerk ID, stored in the subject JWT field
+    externalId: v.string(),
+  }).index("byExternalId", ["externalId"]),
 });

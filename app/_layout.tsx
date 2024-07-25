@@ -78,7 +78,7 @@ export default function RootLayout() {
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
           <Slot />
-          <Toast position="bottom" config={toastConfig} />
+          <Toast position="bottom" />
         </ThemeProvider>
       </ConvexProviderWithClerk>
     </ClerkProvider>

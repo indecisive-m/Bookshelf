@@ -33,11 +33,5 @@ export const toastConfig = {
     Overwrite 'error' type,
     by modifying the existing `ErrorToast` component
   */
-  error: (props: Props) => (
-    <ErrorToast
-      {...props}
-      style={{ backgroundColor: props.backgroundColor }}
-      text1Style={{ color: props.textColor }}
-    />
-  ),
+  error: (props: Props) => <ErrorToast {...props} props />,
 };
