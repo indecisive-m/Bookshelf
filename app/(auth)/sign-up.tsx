@@ -13,6 +13,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
 import Toast from "react-native-toast-message";
+import { borderRadius, fontSize, spacing } from "@/constants/Styles";
 
 export default function SignUpScreen() {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -23,6 +24,10 @@ export default function SignUpScreen() {
   const [password, setPassword] = useState("");
   const [pendingVerification, setPendingVerification] = useState(false);
   const [code, setCode] = useState("");
+  const [name, setName] = useState({
+    firstName: "",
+    secondName: "",
+  });
 
   const clerk = useClerk();
 
@@ -35,6 +40,8 @@ export default function SignUpScreen() {
       await signUp.create({
         emailAddress,
         password,
+        firstName: name.firstName,
+        lastName: name.secondName,
       });
 
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
@@ -157,7 +164,48 @@ export default function SignUpScreen() {
               ]}
             />
           </ThemedView>
-          <ThemedView style={styles.container}>
+          <ThemedView style={{ flexDirection: "row" }}>
+            <ThemedView style={[styles.container, styles.halfScreenContainer]}>
+              <ThemedText type="subtitle">
+                First Name:
+                <ThemedText style={styles.optionalText}>(optional)</ThemedText>
+              </ThemedText>
+
+              <TextInput
+                value={name.firstName}
+                placeholder="First name..."
+                onChangeText={(e) => setName({ ...name, firstName: e })}
+                style={[
+                  styles.input,
+                  {
+                    borderColor: Colors[theme].tint,
+                    color: Colors[theme].text,
+                  },
+                ]}
+              />
+            </ThemedView>
+
+            <ThemedView style={[styles.container, styles.halfScreenContainer]}>
+              <ThemedText type="subtitle">
+                Second Name:
+                <ThemedText style={styles.optionalText}>(optional)</ThemedText>
+              </ThemedText>
+
+              <TextInput
+                value={name.secondName}
+                placeholder="Second Name..."
+                onChangeText={(e) => setName({ ...name, secondName: e })}
+                style={[
+                  styles.input,
+                  {
+                    borderColor: Colors[theme].tint,
+                    color: Colors[theme].text,
+                  },
+                ]}
+              />
+            </ThemedView>
+          </ThemedView>
+          <ThemedView style={[styles.container]}>
             <Pressable
               onPress={onSignUpPress}
               style={[
@@ -213,29 +261,44 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     justifyContent: "center",
-    padding: 10,
-    gap: 10,
+    padding: spacing.small,
+    gap: spacing.small,
   },
   button: {
-    borderRadius: 10,
-    paddingVertical: 20,
-    paddingHorizontal: 50,
+    borderRadius: borderRadius.small,
+    paddingVertical: spacing.medium,
+    paddingHorizontal: spacing.huge,
     width: "100%",
     alignItems: "center",
+    shadowColor: "black",
+    shadowOffset: {
+      width: 0,
+      height: 11,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 11.78,
+    elevation: 15,
   },
+
   input: {
-    padding: 10,
+    padding: spacing.small,
     borderWidth: 1,
-    fontSize: 16,
+    fontSize: fontSize.small,
+  },
+  halfScreenContainer: {
+    width: "50%",
   },
   link: {
     justifyContent: "center",
     alignItems: "center",
   },
   secondaryButton: {
-    borderWidth: 2,
-    paddingHorizontal: 20,
-    paddingVertical: 5,
-    borderRadius: 10,
+    borderWidth: spacing.micro,
+    paddingHorizontal: spacing.large,
+    paddingVertical: spacing.tiny,
+    borderRadius: borderRadius.small,
+  },
+  optionalText: {
+    fontSize: fontSize.extraSmall,
   },
 });

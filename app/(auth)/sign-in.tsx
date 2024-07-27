@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import React, { useCallback, useState } from "react";
 import { Colors } from "@/constants/Colors";
+import { borderRadius, fontSize, spacing } from "@/constants/Styles";
 import { Authenticated, Unauthenticated, useConvexAuth } from "convex/react";
 import Toast from "react-native-toast-message";
 import { ThemedView } from "@/components/ThemedView";
@@ -135,7 +136,9 @@ export default function Page() {
           onPress={onSignInPress}
           style={[
             styles.button,
-            { backgroundColor: Colors[theme].buttonAction },
+            {
+              backgroundColor: Colors[theme].buttonAction,
+            },
           ]}
         >
           <ThemedText
@@ -175,29 +178,37 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     justifyContent: "center",
-    padding: 10,
-    gap: 10,
+    padding: spacing.small,
+    gap: spacing.small,
   },
   button: {
-    borderRadius: 10,
-    paddingVertical: 20,
-    paddingHorizontal: 50,
+    borderRadius: borderRadius.small,
+    paddingVertical: spacing.medium,
+    paddingHorizontal: spacing.huge,
     width: "100%",
     alignItems: "center",
+    shadowColor: "black",
+    shadowOffset: {
+      width: 0,
+      height: 11,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 11.78,
+    elevation: 15,
   },
   input: {
-    padding: 10,
+    padding: spacing.small,
     borderWidth: 1,
-    fontSize: 16,
+    fontSize: fontSize.small,
   },
   link: {
     justifyContent: "center",
     alignItems: "center",
   },
   secondaryButton: {
-    borderWidth: 2,
-    paddingHorizontal: 20,
-    paddingVertical: 5,
-    borderRadius: 10,
+    borderWidth: spacing.micro,
+    paddingHorizontal: spacing.large,
+    paddingVertical: spacing.tiny,
+    borderRadius: borderRadius.small,
   },
 });

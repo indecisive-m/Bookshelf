@@ -1,5 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import { action, mutation, query } from "./_generated/server";
+import { Id } from "./_generated/dataModel";
 
 export const fetchBookInfoFromOpenLibaryWithISBN = action({
   args: {
@@ -19,15 +20,18 @@ export const fetchBookInfoFromOpenLibaryWithISBN = action({
 export const addBookIntoDB = mutation({
   args: {
     isbn: v.string(),
+    id: v.id("users"),
     bookshelf: v.optional(v.string()),
   },
 
   handler: async (ctx, args) => {
-    const userId = (await ctx.auth.getUserIdentity())?.email;
+    // const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
 
-    if (!userId) {
-      throw new ConvexError("User not authenticated");
-    }
+    // if (!userId) {
+    //   throw new ConvexError("User not authenticated");
+    // }
+
+    const userId: Id<"users"> = user._id;
 
     if (!args.bookshelf) {
       args.bookshelf = "default";
@@ -35,7 +39,7 @@ export const addBookIntoDB = mutation({
 
     return ctx.db.insert("books", {
       bookshelf: args.bookshelf,
-      email: userId,
+      id: userId,
       isbn: args.isbn,
     });
   },
@@ -50,9 +54,6 @@ export const getAllBooksFromDB = query({
       throw new ConvexError("User not authenticated");
     }
 
-    return ctx.db
-      .query("books")
-      .withIndex("by_email", (q) => q.eq("email", userId))
-      .collect();
+    return ctx.db.query("books").collect();
   },
 });

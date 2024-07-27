@@ -1,5 +1,8 @@
+import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import UserHeader from "@/components/UserHeader";
 import Welcome from "@/components/Welcome";
+import { spacing } from "@/constants/Styles";
 import { api } from "@/convex/_generated/api";
 import { BookObject } from "@/utils/types";
 import {
@@ -12,19 +15,13 @@ import {
 import { useAction } from "convex/react";
 import { Link, Redirect, useRouter } from "expo-router";
 import { useState } from "react";
-import {
-  Button,
-  Text,
-  TextInput,
-  View,
-  ScrollView,
-  ActivityIndicator,
-  Pressable,
-} from "react-native";
+import { Button, TextInput, StyleSheet } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function HomePage() {
   const { user } = useUser();
   const { isLoaded, isSignedIn } = useAuth();
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const clerk = useClerk();
 
@@ -34,33 +31,14 @@ export default function HomePage() {
 
   const fetchBooks = useAction(api.books.fetchBookInfoFromOpenLibaryWithISBN);
 
-  if (!isLoaded) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator />
-      </View>
-    );
-  }
-
-  const signOut = () => {
-    clerk.signOut();
-    router.replace("/");
-  };
-
-  const deleteAccount = () => {
-    user?.delete();
-  };
-
   const onClick = async () => {
     const name: BookObject = await fetchBooks({ isbn: isbn });
   };
 
   return (
-    <ThemedView style={{ flex: 1 }}>
+    <ThemedView style={[styles.container, { paddingVertical: insets.top }]}>
       <SignedIn>
-        <Text>{user?.emailAddresses[0].emailAddress}</Text>
-        <Button title="Sign Out" onPress={signOut} />
-        <Button title="Delete Account" onPress={deleteAccount} />
+        <UserHeader />
         <TextInput
           placeholder="Text"
           value={text}
@@ -84,3 +62,10 @@ export default function HomePage() {
     </ThemedView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: spacing.small,
+  },
+});
