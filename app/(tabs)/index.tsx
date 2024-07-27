@@ -12,7 +12,7 @@ import {
   useClerk,
   useUser,
 } from "@clerk/clerk-expo";
-import { useAction } from "convex/react";
+import { useAction, useMutation } from "convex/react";
 import { Link, Redirect, useRouter } from "expo-router";
 import { useState } from "react";
 import { Button, TextInput, StyleSheet } from "react-native";
@@ -30,9 +30,14 @@ export default function HomePage() {
   const [isbn, setIsbn] = useState("");
 
   const fetchBooks = useAction(api.books.fetchBookInfoFromOpenLibaryWithISBN);
+  const addBooks = useMutation(api.books.addBookIntoDB);
 
   const onClick = async () => {
     const name: BookObject = await fetchBooks({ isbn: isbn });
+  };
+
+  const addBook = async () => {
+    addBooks({ isbn: "1000" });
   };
 
   return (
@@ -51,6 +56,7 @@ export default function HomePage() {
           }}
         />
         <Button title="get books" onPress={onClick} />
+        <Button title="Add" onPress={addBook} />
       </SignedIn>
       <SignedOut>
         <ThemedView

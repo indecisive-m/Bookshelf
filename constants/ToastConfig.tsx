@@ -33,5 +33,5 @@ export const toastConfig = {
     Overwrite 'error' type,
     by modifying the existing `ErrorToast` component
   */
-  error: (props: Props) => <ErrorToast {...props} props />,
+  error: (props: Props) => <ErrorToast {...props} />,
 };

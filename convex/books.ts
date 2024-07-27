@@ -1,6 +1,12 @@
 import { ConvexError, v } from "convex/values";
-import { action, mutation, query } from "./_generated/server";
-import { Id } from "./_generated/dataModel";
+import { action, mutation, query, QueryCtx } from "./_generated/server";
+
+const getCurrentUser = async (ctx: QueryCtx, externalId: string) => {
+  return await ctx.db
+    .query("users")
+    .withIndex("byExternalId", (q) => q.eq("externalId", externalId))
+    .unique();
+};
 
 export const fetchBookInfoFromOpenLibaryWithISBN = action({
   args: {
@@ -20,18 +26,21 @@ export const fetchBookInfoFromOpenLibaryWithISBN = action({
 export const addBookIntoDB = mutation({
   args: {
     isbn: v.string(),
-    id: v.id("users"),
     bookshelf: v.optional(v.string()),
   },
 
   handler: async (ctx, args) => {
-    // const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
+    const userIdentity = await ctx.auth.getUserIdentity();
 
-    // if (!userId) {
-    //   throw new ConvexError("User not authenticated");
-    // }
+    if (!userIdentity) {
+      throw new ConvexError("Unauthenicated Call");
+    }
 
-    const userId: Id<"users"> = user._id;
+    const user = await getCurrentUser(ctx, userIdentity.subject);
+
+    if (!user) {
+      throw new ConvexError("Unauthenticated Call");
+    }
 
     if (!args.bookshelf) {
       args.bookshelf = "default";
@@ -39,8 +48,8 @@ export const addBookIntoDB = mutation({
 
     return ctx.db.insert("books", {
       bookshelf: args.bookshelf,
-      id: userId,
       isbn: args.isbn,
+      user: user._id,
     });
   },
 });
@@ -48,10 +57,16 @@ export const addBookIntoDB = mutation({
 export const getAllBooksFromDB = query({
   args: {},
   handler: async (ctx, args) => {
-    const userId = (await ctx.auth.getUserIdentity())?.email;
+    const userIdentity = await ctx.auth.getUserIdentity();
 
-    if (!userId) {
+    if (!userIdentity) {
       throw new ConvexError("User not authenticated");
+    }
+
+    const user = await getCurrentUser(ctx, userIdentity.subject);
+
+    if (!user) {
+      throw new ConvexError("Unauthenticated Call");
     }
 
     return ctx.db.query("books").collect();

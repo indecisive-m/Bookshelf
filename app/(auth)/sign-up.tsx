@@ -14,6 +14,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
 import Toast from "react-native-toast-message";
 import { borderRadius, fontSize, spacing } from "@/constants/Styles";
+import { ErrorObject } from "@/constants/types";
 
 export default function SignUpScreen() {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -54,7 +55,7 @@ export default function SignUpScreen() {
 
       const error = err.errors;
 
-      error.map((error) => {
+      error.map((error: ErrorObject) => {
         if (error.code === "form_param_format_invalid") {
           Toast.show({
             type: "error",
