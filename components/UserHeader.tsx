@@ -14,16 +14,14 @@ const UserHeader = () => {
     router.navigate("/account");
   };
 
+  const welcomeText = user?.firstName ? `Hello ${user?.firstName}!` : "Hello!";
+
   return (
     <ThemedView style={styles.container}>
       <Pressable onPress={navigateToAccount}>
         <Image source={{ uri: user?.imageUrl }} style={styles.image} />
       </Pressable>
-      {user?.firstName ? (
-        <ThemedText type="subtitle">Hello {user?.firstName}!</ThemedText>
-      ) : (
-        <ThemedText type="subtitle">Hello!</ThemedText>
-      )}
+      <ThemedText type="subtitle">{welcomeText}</ThemedText>
     </ThemedView>
   );
 };

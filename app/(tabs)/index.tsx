@@ -14,9 +14,11 @@ import {
 } from "@clerk/clerk-expo";
 import { useAction, useMutation } from "convex/react";
 import { Link, Redirect, useRouter } from "expo-router";
-import { useState } from "react";
-import { Button, TextInput, StyleSheet } from "react-native";
+import { useEffect, useLayoutEffect, useState } from "react";
+import { Button, TextInput, StyleSheet, useColorScheme } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as NavigationBar from "expo-navigation-bar";
+import { Colors } from "react-native/Libraries/NewAppScreen";
 
 export default function HomePage() {
   const { user } = useUser();
@@ -24,6 +26,7 @@ export default function HomePage() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const clerk = useClerk();
+  const theme = useColorScheme() ?? "dark";
 
   const [text, setText] = useState("");
   const [shelf, setShelf] = useState("default");

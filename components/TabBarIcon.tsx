@@ -29,7 +29,7 @@ const TabBarIcon = ({ focused, name }: Props) => {
         }
       >
         <Ionicons
-          name={name}
+          name={focused ? name : `${name}-outline`}
           size={30}
           color={focused ? Colors[theme].buttonActionText : Colors[theme].icon}
         />

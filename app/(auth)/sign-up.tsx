@@ -5,6 +5,8 @@ import {
   StyleSheet,
   Pressable,
   useColorScheme,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useClerk, useSignUp } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
@@ -59,18 +61,21 @@ export default function SignUpScreen() {
         if (error.code === "form_param_format_invalid") {
           Toast.show({
             type: "error",
+            position: "top",
             text1: "Email address invalid",
           });
         }
         if (error.code === "form_password_length_too_short") {
           Toast.show({
             type: "error",
+            position: "top",
             text1: "Password too short",
           });
         }
         if (error.code === "form_password_pwned") {
           Toast.show({
             type: "error",
+            position: "top",
             text1:
               "Password has been found in an online data breach. Please use a different password",
           });
@@ -78,24 +83,28 @@ export default function SignUpScreen() {
         if (error.code === "form_identifier_exists") {
           Toast.show({
             type: "error",
+            position: "top",
             text1: "That email address is in use. Would you like to log in?",
           });
         }
         if (error.code === "form_param_nil" && !emailAddress && !password) {
           Toast.show({
             type: "error",
+            position: "top",
             text1: "Please enter an email address and password",
           });
         }
         if (error.code === "form_param_nil" && !emailAddress) {
           Toast.show({
             type: "error",
+            position: "top",
             text1: "Please enter an email address",
           });
         }
         if (error.code === "form_param_nil" && !password) {
           Toast.show({
             type: "error",
+            position: "top",
             text1: "Please enter a password",
           });
         }
@@ -147,7 +156,10 @@ export default function SignUpScreen() {
               onChangeText={(email) => setEmailAddress(email)}
               style={[
                 styles.input,
-                { borderColor: Colors[theme].tint, color: Colors[theme].text },
+                {
+                  borderColor: Colors[theme].tint,
+                  color: Colors[theme].text,
+                },
               ]}
             />
           </ThemedView>
@@ -161,7 +173,10 @@ export default function SignUpScreen() {
               onChangeText={(password) => setPassword(password)}
               style={[
                 styles.input,
-                { borderColor: Colors[theme].tint, color: Colors[theme].text },
+                {
+                  borderColor: Colors[theme].tint,
+                  color: Colors[theme].text,
+                },
               ]}
             />
           </ThemedView>
@@ -188,13 +203,13 @@ export default function SignUpScreen() {
 
             <ThemedView style={[styles.container, styles.halfScreenContainer]}>
               <ThemedText type="subtitle">
-                Second Name:
+                Last Name:
                 <ThemedText style={styles.optionalText}>(optional)</ThemedText>
               </ThemedText>
 
               <TextInput
                 value={name.secondName}
-                placeholder="Second Name..."
+                placeholder="Last name..."
                 onChangeText={(e) => setName({ ...name, secondName: e })}
                 style={[
                   styles.input,
@@ -288,6 +303,7 @@ const styles = StyleSheet.create({
   },
   halfScreenContainer: {
     width: "50%",
+    columnGap: spacing.extraSmall,
   },
   link: {
     justifyContent: "center",

@@ -13,6 +13,8 @@ import {
   StyleSheet,
   Pressable,
   useColorScheme,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import React, { useCallback, useState } from "react";
 import { Colors } from "@/constants/Colors";
@@ -52,6 +54,7 @@ export default function Page() {
 
       if (error === "form_password_incorrect") {
         Toast.show({
+          position: "top",
           type: "error",
           text1: "Password incorrect",
         });
@@ -61,6 +64,7 @@ export default function Page() {
       if (error === "form_identifier_not_found") {
         Toast.show({
           type: "error",
+          position: "top",
           text1: "Email not recognised",
           props: {
             backgroundColor: Colors[theme].text,
@@ -72,6 +76,7 @@ export default function Page() {
       if (error === "form_param_nil") {
         Toast.show({
           type: "error",
+          position: "top",
           text1: "Please enter a password",
           props: {
             backgroundColor: Colors[theme].text,
@@ -83,6 +88,7 @@ export default function Page() {
       if (error === "form_param_format_invalid") {
         Toast.show({
           type: "error",
+          position: "top",
           text1: "Please enter a valid email",
           props: {
             backgroundColor: Colors[theme].text,
@@ -94,83 +100,88 @@ export default function Page() {
   }, [isLoaded, emailAddress, password]);
 
   return (
-    <ThemedView
-      style={{
-        justifyContent: "center",
-        alignItems: "center",
-        flex: 1,
-        padding: 20,
-        gap: 10,
-      }}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={-250}
     >
-      <ThemedView style={styles.container}>
-        <ThemedText type="title">Email:</ThemedText>
-        <TextInput
-          autoCapitalize="none"
-          value={emailAddress}
-          placeholder="Email..."
-          secureTextEntry={false}
-          onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
-          style={[
-            styles.input,
-            { borderColor: Colors[theme].tint, color: Colors[theme].text },
-          ]}
-        />
-      </ThemedView>
-      <ThemedView style={styles.container}>
-        <ThemedText type="title">Password:</ThemedText>
+      <ThemedView
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          flex: 1,
+          padding: 20,
+          gap: 10,
+        }}
+      >
+        <ThemedView style={styles.container}>
+          <ThemedText type="title">Email:</ThemedText>
+          <TextInput
+            autoCapitalize="none"
+            value={emailAddress}
+            placeholder="Email..."
+            secureTextEntry={false}
+            onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
+            style={[
+              styles.input,
+              { borderColor: Colors[theme].tint, color: Colors[theme].text },
+            ]}
+          />
+        </ThemedView>
+        <ThemedView style={styles.container}>
+          <ThemedText type="title">Password:</ThemedText>
 
-        <TextInput
-          value={password}
-          placeholder="Password..."
-          secureTextEntry={true}
-          onChangeText={(password) => setPassword(password)}
-          style={[
-            styles.input,
-            { borderColor: Colors[theme].tint, color: Colors[theme].text },
-          ]}
-        />
-      </ThemedView>
-      <ThemedView style={styles.container}>
+          <TextInput
+            value={password}
+            placeholder="Password..."
+            secureTextEntry={true}
+            onChangeText={(password) => setPassword(password)}
+            style={[
+              styles.input,
+              { borderColor: Colors[theme].tint, color: Colors[theme].text },
+            ]}
+          />
+        </ThemedView>
+        <ThemedView style={styles.container}>
+          <Pressable
+            onPress={onSignInPress}
+            style={[
+              styles.button,
+              {
+                backgroundColor: Colors[theme].buttonAction,
+              },
+            ]}
+          >
+            <ThemedText
+              type="subtitle"
+              style={{ color: Colors[theme].buttonActionText }}
+            >
+              Log In
+            </ThemedText>
+          </Pressable>
+        </ThemedView>
         <Pressable
-          onPress={onSignInPress}
-          style={[
-            styles.button,
-            {
-              backgroundColor: Colors[theme].buttonAction,
-            },
-          ]}
+          style={[styles.link, styles.container]}
+          onPress={() => router.push("/sign-up")}
         >
           <ThemedText
-            type="subtitle"
-            style={{ color: Colors[theme].buttonActionText }}
+            type="defaultSemiBold"
+            style={{ color: Colors[theme].text, marginBottom: 5 }}
           >
-            Log In
+            Don't have an account?
+          </ThemedText>
+          <ThemedText
+            style={[
+              styles.secondaryButton,
+              { borderColor: Colors[theme].buttonAction },
+            ]}
+            type="defaultSemiBold"
+          >
+            Create Account
           </ThemedText>
         </Pressable>
       </ThemedView>
-
-      <Pressable
-        style={[styles.link, styles.container]}
-        onPress={() => router.push("/sign-up")}
-      >
-        <ThemedText
-          type="defaultSemiBold"
-          style={{ color: Colors[theme].text, marginBottom: 5 }}
-        >
-          Don't have an account?
-        </ThemedText>
-        <ThemedText
-          style={[
-            styles.secondaryButton,
-            { borderColor: Colors[theme].buttonAction },
-          ]}
-          type="defaultSemiBold"
-        >
-          Create Account
-        </ThemedText>
-      </Pressable>
-    </ThemedView>
+    </KeyboardAvoidingView>
   );
 }
 

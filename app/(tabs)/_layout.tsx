@@ -3,15 +3,17 @@ import { useConvexAuth } from "convex/react";
 import { Stack, Tabs } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { useColorScheme, StyleSheet } from "react-native";
+import { useColorScheme, StyleSheet, Platform } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { borderRadius, fontSize, spacing } from "@/constants/Styles";
 import { ThemedView } from "@/components/ThemedView";
 import TabBarIcon from "@/components/TabBarIcon";
+import * as NavigationBar from "expo-navigation-bar";
 
 export default function TabsLayout() {
   const { isSignedIn } = useAuth();
   const theme = useColorScheme() ?? "dark";
+  const visibilty = NavigationBar.useVisibility();
 
   if (!isSignedIn) {
     return <Stack screenOptions={{ headerShown: false }} />;
@@ -24,6 +26,7 @@ export default function TabsLayout() {
           tabBarStyle: {
             backgroundColor: Colors[theme].background,
             borderTopWidth: 0,
+            borderColor: Colors[theme].background,
           },
         }}
       >
