@@ -6,7 +6,17 @@ export default defineSchema({
     isbn: v.string(),
     bookshelf: v.optional(v.string()),
     user: v.string(),
-  }).index("by_bookshelf", ["bookshelf"]),
+    bookTitle: v.string(),
+    authorsNames: v.array(v.string()),
+    firstPublishYear: v.number(),
+    firstSentence: v.string(),
+    averageRating: v.number(),
+    userRating: v.optional(v.string()),
+    comment: v.optional(v.string()),
+    finishedReading: v.boolean(),
+  })
+    .index("by_bookshelf", ["bookshelf"])
+    .index("by_isbn", ["isbn"]),
 
   users: defineTable({
     name: v.string(),

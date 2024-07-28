@@ -1,5 +1,14 @@
 import { ConvexError, v } from "convex/values";
-import { action, mutation, query, QueryCtx } from "./_generated/server";
+import {
+  action,
+  internalMutation,
+  internalQuery,
+  mutation,
+  MutationCtx,
+  query,
+  QueryCtx,
+} from "./_generated/server";
+import { internal } from "./_generated/api";
 
 const getCurrentUser = async (ctx: QueryCtx, externalId: string) => {
   return await ctx.db
@@ -11,6 +20,7 @@ const getCurrentUser = async (ctx: QueryCtx, externalId: string) => {
 export const fetchBookInfoFromOpenLibaryWithISBN = action({
   args: {
     isbn: v.string(),
+    bookshelf: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const data = await fetch(
@@ -19,30 +29,44 @@ export const fetchBookInfoFromOpenLibaryWithISBN = action({
 
     const result = await data.json();
 
-    return result;
+    const bookResult = await result.docs[0];
+    const bookshelf = args.bookshelf;
+    const isbn = args.isbn;
+
+    const authorsNames = await bookResult.author_name;
+    const firstPublishYear = await bookResult.first_publish_year;
+    const bookTitle = await bookResult.title;
+    const averageRating = await bookResult.ratings_average;
+    const firstSentence = await bookResult.first_sentence[0];
+
+    await ctx.runMutation(internal.books.addBookIntoDB, {
+      bookTitle,
+      finishedReading: true,
+      authorsNames,
+      firstPublishYear,
+      averageRating,
+      firstSentence,
+      bookshelf,
+      isbn,
+    });
   },
 });
 
-const fetchBookCoverFromOpenLibraryAPI = action({
-  args: {
-    isbn: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const data = await fetch(
-      `https://covers.openlibrary.org/b/isbn/${args.isbn}-L.jpg`
-    );
-
-    return data;
-  },
-});
-
-export const addBookIntoDB = mutation({
+export const addBookIntoDB = internalMutation({
   args: {
     isbn: v.string(),
     bookshelf: v.optional(v.string()),
+    bookTitle: v.string(),
+    authorsNames: v.array(v.string()),
+    firstPublishYear: v.number(),
+    firstSentence: v.string(),
+    averageRating: v.number(),
+    userRating: v.optional(v.string()),
+    comment: v.optional(v.string()),
+    finishedReading: v.boolean(),
   },
 
-  handler: async (ctx, args) => {
+  handler: async (ctx: MutationCtx, args) => {
     const userIdentity = await ctx.auth.getUserIdentity();
 
     if (!userIdentity) {
@@ -59,11 +83,19 @@ export const addBookIntoDB = mutation({
       args.bookshelf = "default";
     }
 
-    return ctx.db.insert("books", {
+    const insertIntoDB = await ctx.db.insert("books", {
       bookshelf: args.bookshelf,
       isbn: args.isbn,
       user: user._id,
+      bookTitle: args.bookTitle,
+      authorsNames: args.authorsNames,
+      averageRating: args.averageRating,
+      firstPublishYear: args.firstPublishYear,
+      firstSentence: args.firstSentence,
+      finishedReading: args.finishedReading,
     });
+
+    return insertIntoDB;
   },
 });
 
@@ -83,5 +115,30 @@ export const getAllBooksFromDB = query({
     }
 
     return ctx.db.query("books").collect();
+  },
+});
+
+export const getBookFromDBWIthIsbn = query({
+  args: {
+    isbn: v.string(),
+  },
+
+  handler: async (ctx, args) => {
+    const userIdentity = await ctx.auth.getUserIdentity();
+
+    if (!userIdentity) {
+      throw new ConvexError("User not authenticated");
+    }
+
+    const user = await getCurrentUser(ctx, userIdentity.subject);
+
+    if (!user) {
+      throw new ConvexError("Unauthenticated Call");
+    }
+
+    return ctx.db
+      .query("books")
+      .withIndex("by_isbn", (q) => q.eq("isbn", args.isbn))
+      .collect();
   },
 });
