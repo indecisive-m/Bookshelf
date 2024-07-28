@@ -14,12 +14,25 @@ export const fetchBookInfoFromOpenLibaryWithISBN = action({
   },
   handler: async (ctx, args) => {
     const data = await fetch(
-      `https://openlibrary.org/search.json?isbn=${args.isbn}`
+      `https://openlibrary.org/search.json?isbn=${args.isbn}&fields=title,ratings_average,first_sentence,first_publish_year,author_name`
     );
 
     const result = await data.json();
 
     return result;
+  },
+});
+
+const fetchBookCoverFromOpenLibraryAPI = action({
+  args: {
+    isbn: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const data = await fetch(
+      `https://covers.openlibrary.org/b/isbn/${args.isbn}-L.jpg`
+    );
+
+    return data;
   },
 });
 

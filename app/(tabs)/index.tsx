@@ -35,8 +35,33 @@ export default function HomePage() {
   const fetchBooks = useAction(api.books.fetchBookInfoFromOpenLibaryWithISBN);
   const addBooks = useMutation(api.books.addBookIntoDB);
 
-  const onClick = async () => {
-    const name: BookObject = await fetchBooks({ isbn: isbn });
+  const getBookFromAPI = async () => {
+    try {
+      const getBookFromAPI: BookObject = await fetchBooks({ isbn: isbn });
+
+      const bookResult = await getBookFromAPI.docs[0];
+
+      const authorsNames = await bookResult.author_name;
+      const firstPublishYear = await bookResult.first_publish_year;
+      const bookTitle = await bookResult.title;
+      const averageRating = await bookResult.ratings_average;
+      const firstSentence = await bookResult.first_sentence[0];
+      const coverImage = `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`;
+
+      router.navigate({
+        pathname: "/[book]",
+        params: {
+          isbn,
+          authorsNames,
+          firstPublishYear,
+          bookTitle,
+          averageRating,
+          firstSentence,
+        },
+      });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const addBook = async () => {
@@ -49,8 +74,8 @@ export default function HomePage() {
         <UserHeader />
         <TextInput
           placeholder="Text"
-          value={text}
-          onChangeText={(e) => setText(e)}
+          value={isbn}
+          onChangeText={(e) => setIsbn(e)}
           style={{
             width: "100%",
             padding: 10,
@@ -58,8 +83,11 @@ export default function HomePage() {
             borderWidth: 1,
           }}
         />
-        <Button title="get books" onPress={onClick} />
+        <Button title="get books" onPress={getBookFromAPI} />
         <Button title="Add" onPress={addBook} />
+        <Link href={{ pathname: "/[book]", params: { isbn: isbn } }}>
+          <ThemedText>Fetch</ThemedText>
+        </Link>
       </SignedIn>
       <SignedOut>
         <ThemedView
