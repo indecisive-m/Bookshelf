@@ -12,13 +12,20 @@ import {
   useClerk,
   useUser,
 } from "@clerk/clerk-expo";
-import { useAction, useMutation } from "convex/react";
+import { useAction, useMutation, useQueries, useQuery } from "convex/react";
 import { Link, Redirect, useRouter } from "expo-router";
 import { useEffect, useLayoutEffect, useState } from "react";
-import { Button, TextInput, StyleSheet, useColorScheme } from "react-native";
+import {
+  Button,
+  TextInput,
+  StyleSheet,
+  useColorScheme,
+  FlatList,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as NavigationBar from "expo-navigation-bar";
 import { Colors } from "react-native/Libraries/NewAppScreen";
+import Bookshelf from "@/components/Bookshelf";
 
 export default function HomePage() {
   const { user } = useUser();
@@ -33,12 +40,17 @@ export default function HomePage() {
   const [isbn, setIsbn] = useState<string>("");
 
   const fetchBooks = useAction(api.books.fetchBookInfoFromOpenLibaryWithISBN);
+  const fetchBookshelf = useQuery(api.books.getListOfAllBookshelfs);
 
   const getBookFromAPI = async () => {
-    await fetchBooks({ isbn: isbn });
+    // await fetchBooks({ isbn: isbn });
 
     router.navigate({ pathname: "/[book]", params: { isbn } });
   };
+
+  let DATA: Array<string> = [];
+
+  fetchBookshelf?.map((shelf) => DATA.push(shelf));
 
   return (
     <ThemedView style={[styles.container, { paddingVertical: insets.top }]}>
@@ -56,6 +68,10 @@ export default function HomePage() {
           }}
         />
         <Button title="get books" onPress={getBookFromAPI} />
+        <FlatList
+          data={DATA}
+          renderItem={({ item }) => <Bookshelf bookshelf={item} />}
+        />
       </SignedIn>
       <SignedOut>
         <ThemedView

@@ -1,10 +1,17 @@
-import { StyleSheet, Text, View, Image, ActivityIndicator } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ActivityIndicator,
+  ScrollView,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { BookObject } from "@/utils/types";
-import { useAction, useQuery } from "convex/react";
+import { useAction, useConvex, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
 const bookPage = () => {
@@ -16,32 +23,50 @@ const bookPage = () => {
     return <ActivityIndicator />;
   }
 
-  useEffect(() => {
-    setIsLoading(true);
-    const fetchBookInfoFromIsbn = useQuery(api.books.getBookFromDBWIthIsbn, {
-      isbn: isbn,
-    });
+  const fetchBookInfoFromIsbn = useQuery(api.books.getBookFromDBWIthIsbn, {
+    isbn: isbn,
+  });
 
-    setIsLoading(false);
+  const fetchAllBooks = useQuery(api.books.getAllBooksFromDB);
+
+  const stuff = fetchBookInfoFromIsbn?.map((i) => {
+    return (
+      <>
+        <ThemedText>{i.authorsNames[0]}</ThemedText>
+        <ThemedText>{i.bookTitle}</ThemedText>
+        <ThemedText>{i.averageRating}</ThemedText>
+        <ThemedText>{i.bookshelf}</ThemedText>
+        <ThemedText>{i.firstSentence}</ThemedText>
+        <ThemedText>{i.user}</ThemedText>
+        <ThemedText>{i.firstPublishYear}</ThemedText>
+      </>
+    );
+  });
+
+  const otherStuff = fetchAllBooks?.map((i) => {
+    return (
+      <>
+        <ThemedText>{i.authorsNames[0]}</ThemedText>
+        <ThemedText>{i.bookTitle}</ThemedText>
+        <ThemedText>{i.averageRating}</ThemedText>
+        <ThemedText>{i.bookshelf}</ThemedText>
+        <ThemedText>{i.firstSentence}</ThemedText>
+        <ThemedText>{i.user}</ThemedText>
+        <ThemedText>{i.firstPublishYear}</ThemedText>
+      </>
+    );
   });
 
   return (
-    <ThemedView style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1 }}>
       <Image
         height={100}
         width={100}
         source={{ uri: `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg` }}
       />
-      {/* {fetchBookInfoFromIsbn[0] && (
-        <>
-          <ThemedText>{fetchBookInfoFromIsbn[0]?.bookTitle}</ThemedText>
-          <ThemedText>{fetchBookInfoFromIsbn[0]?.averageRating}</ThemedText>
-          <ThemedText>{fetchBookInfoFromIsbn[0]?.firstSentence}</ThemedText>
-          <ThemedText>{fetchBookInfoFromIsbn[0]?.authorsNames[0]}</ThemedText>
-          <ThemedText>{fetchBookInfoFromIsbn[0]?.firstPublishYear}</ThemedText>
-        </>
-      )} */}
-    </ThemedView>
+      {stuff}
+      {otherStuff}
+    </ScrollView>
   );
 };
 

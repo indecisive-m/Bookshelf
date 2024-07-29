@@ -142,3 +142,42 @@ export const getBookFromDBWIthIsbn = query({
       .collect();
   },
 });
+
+export const getAllBooksOnABookshelf = query({
+  args: {
+    bookshelf: v.string(),
+  },
+
+  handler: async (ctx, args) => {
+    const userIdentity = await ctx.auth.getUserIdentity();
+
+    if (!userIdentity) {
+      throw new ConvexError("User not authenticated");
+    }
+
+    const user = await getCurrentUser(ctx, userIdentity.subject);
+
+    if (!user) {
+      throw new ConvexError("Unauthenticated Call");
+    }
+
+    return ctx.db
+      .query("books")
+      .withIndex("by_bookshelf", (q) => q.eq("bookshelf", args.bookshelf))
+      .collect();
+  },
+});
+
+export const getListOfAllBookshelfs = query({
+  args: {},
+  handler: async (ctx) => {
+    let shelves = new Set();
+    const db = await ctx.db.query("books").collect();
+
+    db.map((data) => shelves.add(data.bookshelf));
+
+    const bookshelves = Array.from(shelves);
+
+    return bookshelves;
+  },
+});

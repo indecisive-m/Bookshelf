@@ -75,3 +75,17 @@ export interface Doc {
   subject_key: string[];
   ddc_sort: string;
 }
+
+export type BookFromDB = {
+  isbn: string;
+  bookshelf: string;
+  user: string;
+  bookTitle: string;
+  authorsNames: Array<string>;
+  firstPublishYear: number;
+  firstSentence: string;
+  averageRating: number;
+  userRating?: string;
+  comment?: string;
+  finishedReading: boolean;
+};
